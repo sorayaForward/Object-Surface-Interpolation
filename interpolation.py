@@ -1,15 +1,29 @@
-def newton_interpolation(x, y):
-    n = len(x)
-    coefficients = [y[0]]
+import numpy as np
 
-    for i in range(1, n):
-        divided_diff = [0] * (n - i)
-        for j in range(n - i):
-            if x[j + i] == x[j]:
-                divided_diff[j] = 0  # Handle case where x[j + i] equals x[j] to avoid division by zero
-            else:
-                divided_diff[j] = (y[j + 1] - y[j]) / (x[j + i] - x[j])
-        coefficients.append(divided_diff[0])
-        y = divided_diff
+def divided_diff(x, y):
+    '''
+    function to calculate the divided
+    differences table
+    '''
+    n = len(y)
+    coef = np.zeros([n, n])
+    # the first column is y
+    coef[:,0] = y
+    
+    for j in range(1,n):
+        for i in range(n-j):
+            coef[i][j] = \
+           (coef[i+1][j-1] - coef[i][j-1]) / (x[i+j]-x[i])
+            
+    return coef
 
-    return coefficients
+def newton_poly(coef, x_data, x):
+    '''
+    evaluate the newton polynomial 
+    at x
+    '''
+    n = len(x_data) - 1 
+    p = coef[n]
+    for k in range(1,n+1):
+        p = coef[n-k] + (x -x_data[n-k])*p
+    return p
